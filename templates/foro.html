@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="text-center mb-4">📢 Foro de la Comunidad de Mundo Animal</h2>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card p-3 shadow-sm border-0">
+            <h5 class="fw-bold text-secondary">Publicar una Ayuda o Adopción</h5>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-2"><input type="text" name="autor" class="form-control" placeholder="Tu Nombre o Usuario" required></div>
+                <div class="mb-2">
+                    <select name="tipo" class="form-select">
+                        <option value="Donación Alimento">🥫 Donación de Alimento</option>
+                        <option value="Ropa Animal">👕 Ropa de Animales</option>
+                        <option value="Paseos">🦮 Servicios de Paseo</option>
+                        <option value="Adopción">❤️ Mascotas en Adopción</option>
+                    </select>
+                </div>
+                <div class="mb-2"><input type="text" name="titulo" class="form-control" placeholder="Título del caso" required></div>
+                <div class="mb-2"><textarea name="contenido" class="form-control" placeholder="Escribí los detalles aquí..." rows="3" required></textarea></div>
+                
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted">📷 Adjuntar Foto o Video:</label>
+                    <input type="file" name="multimedia_file" class="form-control form-control-sm" accept="image/*,video/*">
+                </div>
+                
+                <button type="submit" class="btn btn-warning w-100 fw-bold">Publicar en la Comunidad</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <h5 class="fw-bold text-secondary mb-3">Publicaciones Recientes</h5>
+        {% for post in posts %}
+        <div class="card mb-3 shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <span><strong>{{ post[2].upper() }}</strong></span>
+                <span class="small text-warning">Por: {{ post[1] }}</span>
+            </div>
+            <div class="card-body bg-white">
+                <h5 class="card-title fw-bold">{{ post[3] }}</h5>
+                <p class="card-text text-muted">{{ post[4] }}</p>
+                
+                {% if post[5] %}
+                <div class="mt-2 pt-2 border-top">
+                    {% if post[5].lower().endswith('.mp4') or post[5].lower().endswith('.mov') or post[5].lower().endswith('.avi') %}
+                        <video src="{{ url_for('static', filename='uploads/' + post[5]) }}" controls class="w-100 rounded-3" style="max-height: 350px;"></video>
+                    {% else %}
+                        <img src="{{ url_for('static', filename='uploads/' + post[5]) }}" class="img-fluid rounded-3" style="max-height: 350px;" alt="Multimedia Comunidad">
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
