@@ -1,0 +1,76 @@
+    {% extends 'base.html' %}
+{% block content %}
+<h2 class="fw-bold mb-4 text-secondary">🛒 Tu Carrito de Compras - Mundo Animal</h2>
+
+{% if not carrito %}
+<div class="alert alert-info rounded-4 p-4 text-center">
+    <h4>Tu carrito está vacío 🐶</h4>
+    <p class="mb-3">¡Explorá nuestro catálogo para consentir a tu mascota!</p>
+    <a href="{{ url_for('tienda') }}" class="btn btn-warning fw-bold">Volver a la Tienda</a>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card border-0 shadow-sm p-3 bg-white">
+            <h5 class="fw-bold border-bottom pb-2 text-muted">Artículos Seleccionados</h5>
+            
+            {% for key, item in carrito.items() %}
+            <div class="d-flex justify-content-between align-items-center border-bottom py-3 flex-wrap gap-2">
+                <div>
+                    <h6 class="fw-bold mb-1 text-dark">{{ item.nombre }}</h6>
+                    <small class="text-muted d-block">⚙️ Preferencia: {{ item.detalle }}</small>
+                    <span class="text-success fw-bold">${{ item.precio }} c/u</span>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2">
+                    <form action="{{ url_for('actualizar_carrito', item_key=key) }}" method="POST" class="d-flex align-items-center">
+                        <input type="number" name="cantidad" value="{{ item.cantidad }}" class="form-control form-control-sm text-center mx-1" style="width: 60px;" min="0">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">🔄</button>
+                    </form>
+                    
+                    <a href="{{ url_for('eliminar_del_carrito', item_key=key) }}" class="btn btn-sm btn-danger rounded-3">🗑️ Borrar</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm p-3 bg-white mb-3 text-center">
+            <h6 class="fw-bold text-danger">❤️ Colaboración Solidaria</h6>
+            <p class="small text-muted">Sumá un beneficio para alimentos y vacunas de refugios de rescate animal.</p>
+            <form action="{{ url_for('agregar_donacion_web') }}" method="POST">
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text">$</span>
+                    <input type="number" name="monto_donacion" value="{{ donacion }}" class="form-control" placeholder="Monto a donar">
+                    <button class="btn btn-success" type="submit">Aplicar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4 bg-dark text-white rounded-4">
+            <h4 class="fw-bold text-warning border-bottom pb-2">Resumen</h4>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal Productos:</span>
+                <span>${{ subtotal }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+                <span>Aporte Solidario:</span>
+                <span class="text-danger">+ ${{ donacion }}</span>
+            </div>
+            <hr class="bg-secondary">
+            <div class="d-flex justify-content-between mb-4 fs-4 fw-bold">
+                <span>TOTAL:</span>
+                <span class="text-warning">${{ total }}</span>
+            </div>
+            
+            <form action="{{ url_for('finalizar_pago') }}" method="POST">
+                <button type="submit" class="btn btn-warning btn-lg w-100 rounded-3 fw-bold text-dark">
+                    🚀 Finalizar Pedido y Pagar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

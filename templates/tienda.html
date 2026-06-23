@@ -1,97 +1,39 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="text-center my-4">
-    <h1 class="display-5 fw-bold text-dark">🐈 Molly Pett 🐕</h1>
-    <p class="text-muted fs-5">Identificá visualmente tus productos y agendá turnos comerciales</p>
-</div>
+<form action="{{ url_for('agregar_al_carrito') }}" method="POST">
+    <input type="hidden" name="id_producto" value="{{ item[0] }}">
+    <input type="hidden" name="nombre" value="{{ item[1] }}">
+    <input type="hidden" name="precio" value="{{ item[3] }}">
 
-<div class="row">
-    {% for item in items %}
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 border-0 shadow-sm">
-            <img src="{{ item[5] }}" class="card-img-top product-img" alt="{{ item[1] }}">
-            
-            <div class="p-3 bg-light d-flex justify-content-between align-items-center border-bottom">
-                <span class="badge bg-dark px-3 py-2 rounded-pill">{{ item[2] }}</span>
-                <span class="fs-5 fw-bold text-success">${{ item[3] }}</span>
-            </div>
-            
-            <div class="card-body d-flex flex-column justify-content-between bg-white">
-                <div>
-                    <h5 class="card-title fw-bold text-secondary mb-3">{{ item[1] }}</h5>
-                    <form id="form-{{ item[0] }}">
-                        
-                        {% if item[4] == 'mercaderia' %}
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold text-muted">Seleccionar Variante / Color:</label>
-                                <select class="form-select rounded-3">
-                                    <option value="rojo">🔴 Color Rojo / Estándar</option>
-                                    <option value="azul">🔵 Color Azul / Mediano</option>
-                                    <option value="verde">🟢 Color Verde / Grande</option>
-                                </select>
-                            </div>
-
-                        {% elif item[4] == 'chapita' %}
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold text-muted">Nombre y Teléfono a Grabar:</label>
-                                <input type="text" class="form-control rounded-3 mb-2" placeholder="Ej: 'Firu' - 3624XXXXXX" required>
-                                <label class="form-label small fw-bold text-muted">Color del metal:</label>
-                                <select class="form-select rounded-3">
-                                    <option value="oro">🥇 Dorado pulido</option>
-                                    <option value="plata">🥈 Plateado brillante</option>
-                                </select>
-                            </div>
-
-                        {% elif item[4] == 'servicio' %}
-                            <div class="mb-2">
-                                <label class="form-label small fw-bold text-muted">Día (Lunes a Viernes):</label>
-                                <input type="date" class="form-control rounded-3 date-picker-check" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold text-muted">Horario Comercial:</label>
-                                <select class="form-select rounded-3" required>
-                                    <option value="" disabled selected>Elegir Horario...</option>
-                                    <option value="09:00">09:00 AM</option>
-                                    <option value="11:00">11:00 AM</option>
-                                    <option value="18:00">06:00 PM (18hs)</option>
-                                    <option value="20:00">08:00 PM (20hs)</option>
-                                </select>
-                            </div>
-                        {% endif %}
-                    </form>
-                </div>
-                <button type="button" class="btn btn-warning w-100 py-2 rounded-3 mt-2 fw-bold text-dark" onclick="agregarAlCarrito('{{ item[1] }}', '{{ item[0] }}')">
-                    🛒 Agregar al Carrito
-                </button>
-            </div>
+    {% if item[4] == 'mercaderia' %}
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Seleccionar Variante / Color:</label>
+            <select name="detalle" class="form-select rounded-3">
+                <option value="Rojo / Chico">🔴 Color Rojo / Estándar</option>
+                <option value="Azul / Mediano">🔵 Color Azul / Mediano</option>
+                <option value="Verde / Grande">🟢 Color Verde / Grande</option>
+            </select>
         </div>
-    </div>
-    {% endfor %}
-</div>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const dateInputs = document.querySelectorAll('.date-picker-check');
-        const hoy = new Date().toISOString().split('T')[0];
-        dateInputs.forEach(input => {
-            input.min = hoy;
-            input.addEventListener('input', function(e) {
-                const day = new Date(this.value).getUTCDay();
-                if([0, 6].includes(day)) {
-                    this.value = '';
-                    alert("Por favor, elija un día hábil (Lunes a Viernes). Mundo Animal permanece cerrado los fines de semana.");
-                }
-            });
-        });
-    });
-
-    function agregarAlCarrito(nombreItem, idForm) {
-        const form = document.getElementById('form-' + idForm);
-        if(form.checkValidity()) {
-            alert(`🎉 ¡Agregado!\n"${nombreItem}" se sumó a tu carrito de compras.`);
-        } else {
-            alert("❌ Por favor completa los campos requeridos.");
-        }
-    }
-</script>
-{% endblock %}
+    {% elif item[4] == 'chapita' %}
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Nombre y Teléfono a Grabar:</label>
+            <input type="text" name="detalle" class="form-control rounded-3" placeholder="Ej: 'Firu' - 3624XXXXXX" required>
+        </div>
+    {% elif item[4] == 'servicio' %}
+        <div class="mb-2">
+            <label class="form-label small fw-bold text-muted">Día (Lunes a Viernes):</label>
+            <input type="date" name="fecha_turno" class="form-control rounded-3 date-picker-check" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label small fw-bold text-muted">Horario Comercial:</label>
+            <select name="horario_turno" class="form-select rounded-3" required>
+                <option value="09:00 AM">09:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="18:00 PM">06:00 PM (18hs)</option>
+                <option value="20:00 PM">08:00 PM (20hs)</option>
+            </select>
+        </div>
+    {% endif %}
+    
+    <button type="submit" class="btn btn-warning w-100 py-2 rounded-3 mt-2 fw-bold text-dark">
+        🛒 Agregar al Carrito
+    </button>
+</form>
